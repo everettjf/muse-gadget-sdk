@@ -5,9 +5,9 @@ import { once } from "node:events";
 import { mkdtemp, writeFile, rm, mkdir } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { createPiAgent } from "../src/pi.js";
+import { createAcpAgent as createPiAgent } from "../src/acp.js";
 
-test("real Pi SDK streams a reply, retains context, and has no enabled tools", async () => {
+test("real Pi ACP adapter streams a reply, retains context, and has no enabled tools", async () => {
   const requests: any[] = [];
   const api = createServer(async (req, res) => {
     const chunks = [];

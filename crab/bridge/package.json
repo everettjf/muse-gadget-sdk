@@ -13,7 +13,11 @@
     "test": "node --import tsx --test test/*.test.ts"
   },
   "dependencies": {
-    "@earendil-works/pi-coding-agent": "1.2.0"
+    "@agentclientprotocol/claude-agent-acp": "0.94.0",
+    "@agentclientprotocol/codex-acp": "2.2.2",
+    "@agentclientprotocol/sdk": "0.26.0",
+    "@earendil-works/pi-coding-agent": "1.2.0",
+    "pi-acp": "0.0.34"
   },
   "devDependencies": {
     "@types/node": "24.10.1",

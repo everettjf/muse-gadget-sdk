@@ -1,7 +1,8 @@
 import { resolve } from "node:path";
 import { mkdir } from "node:fs/promises";
 import { AudioServices } from "./audio.js";
-import { createPiAgent, listPiModels } from "./pi.js";
+import { listPiModels } from "./pi.js";
+import { createAcpAgent } from "./acp.js";
 import { createBridge } from "./server.js";
 import { SettingsStore, defaultSettings, audioEnvironment } from "./control.js";
 
@@ -40,12 +41,15 @@ const server = createBridge(
     audio: new AudioServices(env),
     audioFor: (value) => new AudioServices(audioEnvironment(env, value)),
     agent: (_id, value) =>
-      createPiAgent(resolve(dataDir, "workspace"), {
+      createAcpAgent(resolve(dataDir, "workspace"), {
         ...env,
         PI_PROVIDER: value.provider,
         PI_MODEL: value.model,
       }),
-    models: () => listPiModels(env),
+    models: () =>
+      (env.CRAB_AGENT && env.CRAB_AGENT !== "pi") || env.CRAB_ACP_COMMAND
+        ? Promise.resolve([])
+        : listPiModels(env),
     voices: /local_audio\.py/.test(env.TTS_COMMAND || "")
       ? listMacVoices
       : undefined,

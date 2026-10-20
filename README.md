@@ -16,7 +16,7 @@ limitations under the License.
 
 # Crab Stick 🦀 — your StickS3 voice companion
 
-Hold to talk. Release to listen. An independent M5Stack StickS3 firmware with an animated crab, on-device captions, voice replies and a browser console powered by the Pi SDK on your computer.
+Hold to talk. Release to listen. An independent M5Stack StickS3 firmware with an animated crab, on-device captions, voice replies and a browser console powered by an ACP agent on your computer.
 
 **No Muse account, SDK token or subscription required.** You choose the model and speech services; cloud model usage follows the provider's pricing.
 
@@ -137,3 +137,21 @@ Open http://127.0.0.1:8080/. The [Pages workflow](.github/workflows/pages.yml) c
 ## License and upstream
 
 Original Crab code and its avatar are [MIT](crab/LICENSE). Reused upstream files retain their original licenses. The original Muse SDK documentation, community links and third-party attribution are preserved in [README.upstream.md](README.upstream.md). Upstream Muse pairing/token requirements apply to those original applications.
+
+## ACP agent backends
+
+The computer bridge now speaks ACP over stdio. Pi remains the tested default through `pi-acp`; installed adapters also provide Codex and Claude integration. Firmware, speech recognition and speech synthesis are independent of the agent.
+
+In `crab/bridge/.env`, set `CRAB_AGENT=pi`, `codex` or `claude`, then restart the bridge. Run the selected agent's own login/setup first. Provider credentials and subscription eligibility depend on that agent. For other ACP implementations, set a trusted executable and arguments as JSON:
+
+```dotenv
+CRAB_ACP_COMMAND=["/absolute/path/to/agent","--acp"]
+# Optional model ID from that agent's ACP model configuration:
+CRAB_ACP_MODEL=
+```
+
+The client negotiates ACP version 1, creates a session per device, streams replies and cancels timed-out requests. An incompatible adapter, missing login or startup failure is reported in the console. Registry entries are not automatically downloaded or executed.
+
+Pi keeps the existing chat-only policy (no tools, extensions or project context). Other agents use their own tool policies: ACP is a communication protocol, not a sandbox. This first integration does not expose interactive tool approval or long-running coding jobs in the browser; permission requests are declined with an explicit error. Use the agent's terminal for those tasks. Voice turns retain the 120-second limit. The console's model list currently remains Pi-specific; select other agents' models with `CRAB_ACP_MODEL`.
+
+Validation covers a real Pi ACP process against a local streaming model server, retained conversation context, disabled Pi tools, permission rejection, cancellation and subprocess crashes. Codex and Claude adapters are installed but are not yet verified against live accounts.

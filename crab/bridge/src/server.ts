@@ -403,6 +403,10 @@ export function createBridge(config: BridgeConfig, services: Services) {
       await send({ type: "done" });
       res.end();
     } catch (e) {
+      // A cancelled/crashed ACP process cannot serve another turn. Recreate lazily.
+      const failed = agents.get(id);
+      agents.delete(id);
+      if (failed) void failed.then((agent) => agent.dispose()).catch(() => {});
       turn.state = controller.signal.aborted ? "cancelled" : "error";
       turn.error = controller.signal.aborted
         ? "已取消或处理超时，请重试"

@@ -157,3 +157,11 @@ python ../tools/device.py restore --port /dev/cu.usbmodemXXXX --file ../backups/
 ```
 
 设备无法正常启动时，按[技术说明](README.md#3-build-back-up-and-flash)中的 ROM 模式恢复流程操作。
+
+## 切换 ACP agent
+
+电脑桥接端统一使用 ACP。默认 `pi-acp` 转接 Pi，现有语音、螃蟹动画和设备协议保持兼容。
+
+编辑私有的 `crab/bridge/.env`，设置 `CRAB_AGENT=pi`、`codex` 或 `claude`，完成对应 agent 自己的登录后，重启 `npm start`。其他 ACP 程序可配置 `CRAB_ACP_COMMAND=["/绝对路径/agent","--acp"]`；这是 JSON 参数数组，不通过 shell 执行。可用 `CRAB_ACP_MODEL` 指定 agent 公布的完整模型 ID。
+
+当前已验证 Pi 的真实 ACP 语音链路。Codex、Claude 适配器已安装，尚未使用真实账号验证。Pi 仍禁用工具；其他 agent 的工具策略由自身控制，ACP 本身不是沙箱。设备语音请求仍限时 120 秒，交互式工具审批暂不支持，收到权限请求会拒绝并显示错误。浏览器模型列表目前仅供 Pi 使用，其他后端请通过 `CRAB_ACP_MODEL` 配置。暂不自动安装或执行网上注册表中的程序。
